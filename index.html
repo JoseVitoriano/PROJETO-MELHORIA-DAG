@@ -1,0 +1,346 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<link rel="icon" type="image/svg+xml" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Crect width='64' height='64' rx='14' fill='%230f1b2d'/%3E%3Cpath d='M7 27 32 10l25 17v27H7z' fill='%23ff8a3d'/%3E%3Crect x='16' y='31' width='32' height='23' fill='%230f1b2d'/%3E%3Crect x='19' y='34' width='12' height='7' fill='%232dd4bf'/%3E%3Crect x='33' y='34' width='12' height='7' fill='%232dd4bf'/%3E%3Crect x='19' y='44' width='12' height='7' fill='%232dd4bf'/%3E%3Crect x='33' y='44' width='12' height='7' fill='%232dd4bf'/%3E%3Crect x='30' y='31' width='4' height='23' fill='%232f5bea'/%3E%3C/svg%3E">
+<title>DAG · Painel de Melhorias</title>
+<style>
+:root{--bg:#f3f5f9;--panel:#ffffff;--text:#0f1b2d;--muted:#5b6678;--line:#dfe4ec;--warn:#c2410c;--warn-bg:#fff1e8;--ok:#0f766e;--ok-bg:#e5f7f4;--acc:#2f5bea;--acc-bg:#e8eeff;--side:#0f1b2d;--side-text:#c9d3e3;
+box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){--bg:#0a121f;--panel:#142036;--text:#eef2f9;--muted:#9aa7bd;--line:#26385a;--warn:#ff9a5c;--warn-bg:#3a2314;--ok:#35d6c2;--ok-bg:#0f3333;--acc:#8aa6ff;--acc-bg:#1b2a55;--side:#070d18;--side-text:#9aa7bd}}
+:root[data-theme="dark"]{--bg:#0a121f;--panel:#142036;--text:#eef2f9;--muted:#9aa7bd;--line:#26385a;--warn:#ff9a5c;--warn-bg:#3a2314;--ok:#35d6c2;--ok-bg:#0f3333;--acc:#8aa6ff;--acc-bg:#1b2a55;--side:#070d18;--side-text:#9aa7bd}
+html{scroll-padding-top:env(safe-area-inset-top,0px)}
+*{box-sizing:border-box}
+body{margin:0;background:var(--bg);color:var(--text);font-family:'Helvetica Neue',Arial,sans-serif;line-height:1.5}
+.app{display:grid;grid-template-columns:270px 1fr;min-height:100vh}
+aside{background:var(--side);color:var(--side-text);padding:24px 16px;position:sticky;top:0;align-self:start;min-height:100vh}
+.brand{display:flex;align-items:center;gap:10px;color:#fff;font-weight:800;font-size:20px;margin:0 8px 24px}
+.logo{width:34px;height:34px;border-radius:10px;background:linear-gradient(135deg,#ff8a3d,#2dd4bf);display:grid;place-items:center;font-size:14px}
+nav{display:flex;flex-direction:column;gap:4px}
+nav button{all:unset;cursor:pointer;display:flex;align-items:center;gap:12px;padding:11px 12px;border-radius:10px;font-size:15px;color:var(--side-text)}
+nav button:hover{background:rgba(255,255,255,.07)}
+nav button:focus-visible,.card:focus-visible{outline:2px solid var(--acc);outline-offset:2px}
+nav button.on{background:var(--acc);color:#fff;font-weight:700}
+nav .n{margin-left:auto;font-size:12px;opacity:.8}
+nav .ck{margin-left:auto;color:#2dd4bf;font-weight:800}
+.prog{margin:24px 8px 0;font-size:13px}
+.bar{height:8px;border-radius:8px;background:rgba(255,255,255,.14);margin-top:8px;overflow:hidden}
+.bar i{display:block;height:100%;width:0;background:linear-gradient(90deg,#ff8a3d,#2dd4bf);transition:width .4s}
+main{padding:28px 36px 48px;max-width:1100px;width:100%}
+.top{display:flex;justify-content:space-between;align-items:center;gap:12px;margin-bottom:24px}
+.crumb{color:var(--muted);font-size:14px}
+.tbtn{cursor:pointer;border:1px solid var(--line);background:var(--panel);color:var(--text);border-radius:10px;padding:8px 12px;font-size:14px}
+h1{font-size:34px;line-height:1.15;margin:0 0 8px}
+.sub{color:var(--muted);margin:0 0 24px;font-size:17px}
+.kpis{display:grid;grid-template-columns:repeat(4,1fr);gap:14px;margin-bottom:28px}
+.kpi{background:var(--panel);border:1px solid var(--line);border-radius:16px;padding:18px}
+.kpi b{display:block;font-size:34px;line-height:1.1}
+.kpi span{color:var(--muted);font-size:14px}
+.kpi.w b{color:var(--warn)}.kpi.o b{color:var(--ok)}.kpi.a b{color:var(--acc)}
+h3.sec{margin:0 0 14px;font-size:18px}
+.grid{display:grid;grid-template-columns:repeat(3,1fr);gap:14px}
+.card{all:unset;cursor:pointer;background:var(--panel);border:1px solid var(--line);border-radius:16px;padding:18px;display:flex;flex-direction:column;gap:10px;transition:transform .15s,box-shadow .15s}
+.card:hover{transform:translateY(-3px);box-shadow:0 10px 24px rgba(15,27,45,.14)}
+.card .ic{font-size:26px}
+.card h4{margin:0;font-size:17px;line-height:1.25}
+.card .meta{display:flex;gap:8px;align-items:center;flex-wrap:wrap}
+.tag{display:inline-block;align-self:flex-start;font-size:12px;font-weight:700;padding:3px 10px;border-radius:20px;background:var(--acc-bg);color:var(--acc)}
+.tag.img{background:var(--ok-bg);color:var(--ok)}
+.done{outline:2px solid var(--ok)}
+.steps{display:flex;gap:6px;margin-bottom:22px}
+.steps i{flex:1;height:6px;border-radius:6px;background:var(--line)}
+.steps i.on{background:var(--acc)}.steps i.d{background:var(--ok)}
+.cmp{display:grid;grid-template-columns:1fr 56px 1fr;gap:0;align-items:stretch;margin:22px 0}
+.box{border-radius:18px;padding:26px;border:1px solid var(--line);display:flex;flex-direction:column;gap:18px}
+.box h5{margin:0 0 12px;font-size:13px;letter-spacing:.08em}
+.box p{margin:0;font-size:21px;line-height:1.45}
+.box.w{background:var(--warn-bg)}.box.w h5{color:var(--warn)}
+.box.o{background:var(--ok-bg)}.box.o h5{color:var(--ok)}
+.box.drag{outline:3px dashed var(--acc);outline-offset:-6px}
+.arrow{display:grid;place-items:center;font-size:30px;color:var(--muted)}
+/* galeria de imagens */
+.gal{display:grid;grid-template-columns:repeat(auto-fill,minmax(120px,1fr));gap:10px;margin-top:auto}
+.th{position:relative;aspect-ratio:4/3;border-radius:12px;overflow:hidden;border:1px solid var(--line);background:var(--panel)}
+.th img{width:100%;height:100%;object-fit:cover;display:block;cursor:zoom-in}
+.th .rm{position:absolute;top:6px;right:6px;width:26px;height:26px;border-radius:50%;border:0;cursor:pointer;background:rgba(15,27,45,.78);color:#fff;font-size:16px;line-height:1;display:grid;place-items:center}
+.th .rm:hover{background:#c2410c}
+.add{display:flex;flex-direction:column;align-items:center;justify-content:center;gap:4px;aspect-ratio:4/3;border-radius:12px;border:2px dashed var(--line);color:var(--muted);font-size:13px;font-weight:600;text-align:center;cursor:pointer;padding:6px;background:rgba(255,255,255,.35)}
+.add:hover,.add:focus-within{border-color:var(--acc);color:var(--acc)}
+.add span{font-size:22px}
+.gnote{font-size:12px;color:var(--muted);margin:0}
+/* visualizador */
+#lb{position:fixed;inset:0;z-index:50;background:rgba(5,10,20,.9);display:none;align-items:center;justify-content:center;padding:24px}
+#lb.on{display:flex}
+#lb img{max-width:100%;max-height:100%;border-radius:12px;box-shadow:0 20px 60px rgba(0,0,0,.5)}
+#lb button{position:absolute;top:calc(16px + env(safe-area-inset-top,0px));right:16px;border:0;border-radius:10px;padding:10px 14px;font-size:15px;font-weight:700;cursor:pointer;background:#fff;color:#0f1b2d}
+.seg{display:none;gap:6px;margin:16px 0}
+.seg button{flex:1;cursor:pointer;border:1px solid var(--line);background:var(--panel);color:var(--text);padding:10px;border-radius:10px;font-size:15px}
+.seg button.on{background:var(--acc);color:#fff;border-color:var(--acc)}
+.actions{display:flex;gap:10px;flex-wrap:wrap;align-items:center}
+.btn{cursor:pointer;border:1px solid var(--line);background:var(--panel);color:var(--text);padding:11px 18px;border-radius:12px;font-size:15px;font-weight:600}
+.btn.p{background:var(--acc);border-color:var(--acc);color:#fff}
+.btn.g{background:var(--ok);border-color:var(--ok);color:#fff}
+.sp{flex:1}
+.topr{display:flex;gap:8px}
+.btn.x{background:var(--ok);border-color:var(--ok);color:#fff}
+@media (max-width:860px){
+.app{grid-template-columns:1fr}
+aside{position:static;min-height:0;padding:14px 12px}
+.brand{margin-bottom:12px}
+nav{flex-direction:row;overflow-x:auto;gap:6px;padding-bottom:6px}
+nav button{white-space:nowrap;padding:9px 12px}
+nav .n,nav .ck{display:none}
+.prog{display:none}
+main{padding:20px 16px 40px}
+h1{font-size:26px}
+.kpis{grid-template-columns:repeat(2,1fr)}
+.grid{grid-template-columns:1fr}
+.cmp{grid-template-columns:1fr;gap:10px}.arrow{transform:rotate(90deg);height:30px}
+.box p{font-size:18px}
+/* no celular, alterna entre Dificuldade e Melhoria */
+.seg{display:flex}
+.cmp[data-v="w"] .box.o,.cmp[data-v="w"] .arrow,.cmp[data-v="o"] .box.w,.cmp[data-v="o"] .arrow{display:none}
+}
+</style>
+</head>
+<body>
+<div class="app">
+<aside>
+<div class="brand"><div class="logo">📦</div>DAG | Painel de Melhorias</div>
+<nav id="nav"></nav>
+<div class="prog"><span id="pt"></span><div class="bar"><i id="pb"></i></div></div>
+</aside>
+<main>
+<div class="top"><div class="crumb" id="crumb"></div><div class="topr"><button class="tbtn xlbtn" title="Exportar relatório em Excel">⬇ Excel</button><button class="tbtn" id="theme" aria-label="Alternar tema">🌓 Tema</button></div></div>
+<div id="view"></div>
+</main>
+</div>
+<div id="lb" role="dialog" aria-label="Imagem ampliada"><button id="lbx">Fechar ✕</button><img id="lbi" alt=""></div>
+<script>
+var D=[
+{id:"grade",ic:"📋",t:"Grade de informações dos pedidos",area:"Lojas",w:"As lojas não obedecem a grade de informações dos pedidos. Vários pedidos saíram fora do prazo e com demora no envio.",o:"Reforçar com as lojas a importância de seguir a grade e acompanhar o cumprimento para proteger os prazos de envio."},
+{id:"gprotmin",ic:"🏷️",t:"Lote GPROTMIN nas regiões",area:"Vendas regionais",w:"É necessário criar o lote GPROTMIN nas vendas realizadas nas regiões.",o:"Padronizar a criação do lote GPROTMIN em toda venda regional, como parte da rotina do pedido."},
+{id:"comprovante",ic:"🧾",t:"Comprovante de entrega · transportador 2",area:"Depósito",w:"No transportador 2 o próprio depósito entrega ao cliente, sem veículo. A impressão do comprovante e a saída do depósito precisam ser analisadas.",o:"Definir o fluxo de impressão do comprovante e de saída para entregas feitas no próprio depósito."},
+{id:"armazenagem",ic:"🗄️",t:"Armazenagem e endereços",area:"Armazenagem",w:"Faltam endereços disponíveis por causa da forma como os produtos estão armazenados.",o:"Identificar os produtos e resumi-los em um único palete, liberando endereços para a operação."},
+{id:"coletores",ic:"📟",t:"Quantidade de coletores",area:"Separação",w:"A quantidade de coletores limita a distribuição das operações de separação.",o:"Elevar a quantidade de coletores para distribuir melhor a separação."},
+{id:"pcp",ic:"🗓️",t:"PCP define as rotinas",area:"PCP",w:"A expedição acaba definindo as rotinas de operação, papel que não é dela.",o:"O PCP define as rotinas: separação e emissão de etiquetas e relatórios de todas as lojas, na data específica."},
+{id:"boxes",ic:"🚛",t:"Boxes de carregamento e descarregamento · lojas e cliente final",area:"Expedição",w:"Os boxes de carregamento e descarregamento não têm uso definido. A entrega ao cliente final, o abastecimento de lojas e o recebimento de mercadorias disputam o mesmo espaço, o que gera fila de veículos, mistura de cargas e demora na saída.",o:"Definir e sinalizar os boxes por finalidade: carregamento para abastecimento de lojas, carregamento para entrega ao cliente final e descarregamento. Estabelecer regras de uso e responsável para dar fluidez e controle ao fluxo."},
+{id:"almoxarifado",ic:"🏭",t:"Estruturação do almoxarifado",area:"Almoxarifado",w:"A área de operação do almoxarifado não tem delimitação física, o que facilita a circulação de pessoas não autorizadas e a perda de controle sobre os itens.",o:"Estruturar o almoxarifado com estruturas de organização e telas metálicas com uma porta, delimitando o espaço da área de operação."},
+{id:"gradeportapalete",ic:"🔒",t:"Grade metálica no porta-palete · eletrinhos",area:"Armazenagem",w:"Eletrinhos e produtos de caixa master aberta ficam sem proteção e sem controle de saída na estrutura porta-palete.",o:"Definir uma grade metálica adaptada na estrutura porta-palete (estrutura de armazenagem) para controlar os eletrinhos e os produtos com caixa master aberta."},
+{id:"blocada",ic:"🧱",t:"Organização da área blocada",area:"Armazenagem",w:"A área blocada precisa de melhor organização dos itens blocados, e a reposição de paletes não tem um fluxo definido.",o:"Melhorar a organização dos itens blocados e, quando houver necessidade, abrir chamados solicitando paletes."},
+{id:"bico",ic:"📍",t:"Programação de sexta-feira · Bico do Papagaio",area:"Programação",w:"Os novos pontos de abastecimento, conhecidos como Bico do Papagaio, ainda não constam na programação de sexta-feira.",o:"Adicionar na programação de sexta-feira a região dos novos pontos de abastecimento, conhecidos como Bico do Papagaio."},
+{id:"taguatinga",ic:"🚚",t:"Nova região Taguatinga · rota PNA",area:"Programação",w:"A nova região de Taguatinga precisa de uma data de programação definida.",o:"Adicionar Taguatinga na mesma data de programação da região de PNA, pois é a mesma rota de abastecimento."}
+];
+
+/* ---------- estado: análise concluída (localStorage) ---------- */
+var done={};
+try{done=JSON.parse(localStorage.getItem("lf_done")||"{}")}catch(e){done={}}
+function save(){try{localStorage.setItem("lf_done",JSON.stringify(done))}catch(e){}}
+
+/* ---------- imagens (IndexedDB, com cópia em memória) ----------
+   chave = "<id do ponto>:w" (dificuldade) ou "<id do ponto>:o" (melhoria) */
+var IMG={},db=null,persist=true,view="w";
+function idbOpen(cb){
+try{var r=indexedDB.open("lf_dag_img",1);
+r.onupgradeneeded=function(){r.result.createObjectStore("k")};
+r.onsuccess=function(){db=r.result;cb()};
+r.onerror=function(){persist=false;cb()}}catch(e){persist=false;cb()}}
+function idbLoad(cb){
+if(!db){return cb()}
+try{var q=db.transaction("k").objectStore("k").openCursor();
+q.onsuccess=function(){var c=q.result;if(c){IMG[c.key]=c.value;c.continue()}else cb()};
+q.onerror=function(){cb()}}catch(e){cb()}}
+function idbSave(k){
+if(!db){persist=false;return}
+try{var s=db.transaction("k","readwrite").objectStore("k");
+if(IMG[k]&&IMG[k].length)s.put(IMG[k],k);else s.delete(k)}catch(e){persist=false}}
+function nImg(id){return(IMG[id+":w"]||[]).length+(IMG[id+":o"]||[]).length}
+
+/* reduz a imagem (máx. 1280 px, JPEG) para caber no armazenamento do navegador */
+function shrink(file,cb){
+var fr=new FileReader();
+fr.onload=function(){var im=new Image();
+im.onload=function(){var m=1280,sc=Math.min(1,m/Math.max(im.width,im.height)),c=document.createElement("canvas");
+c.width=Math.round(im.width*sc);c.height=Math.round(im.height*sc);
+var x=c.getContext("2d");x.fillStyle="#fff";x.fillRect(0,0,c.width,c.height);x.drawImage(im,0,0,c.width,c.height);
+cb(c.toDataURL("image/jpeg",.8))};
+im.onerror=function(){cb(null)};im.src=fr.result};
+fr.onerror=function(){cb(null)};fr.readAsDataURL(file)}
+function addFiles(k,files){
+var list=Array.prototype.filter.call(files,function(f){return /^image\//.test(f.type)});
+if(!list.length)return;
+var n=0;IMG[k]=IMG[k]||[];
+list.forEach(function(f){shrink(f,function(u){if(u)IMG[k].push(u);if(++n===list.length){idbSave(k);render(true)}})})}
+
+function gal(id,s){
+var k=id+":"+s,a=IMG[k]||[],h='<div class="gal">';
+a.forEach(function(u,n){h+='<div class="th"><img src="'+u+'" alt="Imagem '+(n+1)+' — '+(s==="w"?"dificuldade":"melhoria")+'" data-z="1"><button class="rm" data-k="'+k+'" data-n="'+n+'" aria-label="Remover imagem">×</button></div>'});
+h+='<label class="add"><span>📷</span>Adicionar imagem<input type="file" accept="image/*" multiple hidden data-k="'+k+'"></label></div>';
+return h}
+
+/* ---------- navegação ---------- */
+function idx(){var h=(location.hash||"").slice(1);for(var i=0;i<D.length;i++)if(D[i].id===h)return i;return -1}
+function go(i){location.hash=i<0?"inicio":D[i].id}
+function cnt(){return Object.keys(done).filter(function(k){return done[k]}).length}
+function nav(){
+var c=idx(),h='<button class="'+(c<0?"on":"")+'" data-i="-1">🏠 Visão geral</button>';
+D.forEach(function(d,i){h+='<button class="'+(c===i?"on":"")+'" data-i="'+i+'">'+d.ic+" "+d.t.split(" · ")[0]+(done[d.id]?'<span class="ck">✓</span>':'<span class="n">'+(i<9?'0':'')+(i+1)+'</span>')+"</button>"});
+document.getElementById("nav").innerHTML=h;
+var n=cnt();
+document.getElementById("pt").textContent=n+" de "+D.length+" pontos analisados";
+document.getElementById("pb").style.width=(n/D.length*100)+"%";
+document.querySelectorAll("nav button").forEach(function(b){b.onclick=function(){go(+b.dataset.i)}});
+}
+function home(){
+var h='<h1>Melhorias na operação logística</h1><p class="sub">Dificuldades encontradas e possibilidades de melhoria, da loja à expedição.</p>';
+h+='<div class="kpis"><div class="kpi a"><b>'+D.length+'</b><span>pontos em análise</span></div><div class="kpi w"><b>'+D.length+'</b><span>dificuldades mapeadas</span></div><div class="kpi o"><b>'+D.length+'</b><span>melhorias propostas</span></div><div class="kpi"><b>'+cnt()+'/'+D.length+'</b><span>pontos analisados</span></div></div>';
+h+='<h3 class="sec">Pontos de atenção</h3><div class="grid">';
+D.forEach(function(d,i){var m=nImg(d.id);h+='<button class="card '+(done[d.id]?"done":"")+'" data-i="'+i+'"><span class="ic">'+d.ic+'</span><h4>'+d.t+'</h4><span class="meta"><span class="tag">'+d.area+'</span>'+(m?'<span class="tag img">🖼 '+m+'</span>':'')+'</span></button>'});
+h+='</div><div class="actions" style="margin-top:26px"><button class="btn p" id="start">Iniciar apresentação →</button><button class="btn x xlbtn">⬇ Exportar relatório em Excel</button></div>';
+return h}
+function detail(i){
+var d=D[i],h='<div class="steps">';
+D.forEach(function(x,k){h+='<i class="'+(done[x.id]?"d ":"")+(k===i?"on":"")+'"></i>'});
+h+='</div><span class="tag">'+d.ic+" "+d.area+' · ponto '+(i<9?'0':'')+(i+1)+'</span><h1 style="margin-top:12px">'+d.t+'</h1>';
+h+='<div class="seg" id="seg"><button data-s="w" class="'+(view==="w"?"on":"")+'">Dificuldade</button><button data-s="o" class="'+(view==="o"?"on":"")+'">Melhoria</button></div>';
+h+='<div class="cmp" id="cmp" data-v="'+view+'"><div class="box w" data-k="'+d.id+':w"><div><h5>⚠ DIFICULDADE</h5><p>'+d.w+'</p></div>'+gal(d.id,"w")+'</div><div class="arrow">➜</div><div class="box o" data-k="'+d.id+':o"><div><h5>✔ MELHORIA</h5><p>'+d.o+'</p></div>'+gal(d.id,"o")+'</div></div>';
+h+='<p class="gnote">'+(persist?'As imagens ficam salvas neste navegador. Arraste arquivos para dentro de um cartão ou use “Adicionar imagem”.':'⚠ Este navegador não permite salvar imagens; elas valem só até fechar a página.')+'</p>';
+h+='<div class="actions" style="margin-top:18px"><button class="btn" id="prev">← Anterior</button><button class="btn '+(done[d.id]?"":"g")+'" id="mark">'+(done[d.id]?"Desmarcar análise":"✓ Marcar como analisado")+'</button><span class="sp"></span><button class="btn p" id="next">'+(i<D.length-1?"Próximo →":"Concluir")+'</button></div>';
+return h}
+function render(keep){
+var i=idx(),v=document.getElementById("view"),y=window.scrollY;
+v.innerHTML=i<0?home():detail(i);
+document.getElementById("crumb").textContent=i<0?"Painel › Visão geral":"Painel › "+D[i].t;
+nav();
+if(i<0){document.querySelectorAll(".card").forEach(function(b){b.onclick=function(){go(+b.dataset.i)}});document.getElementById("start").onclick=function(){go(0)}}
+else{
+document.getElementById("prev").onclick=function(){go(i-1)};
+document.getElementById("next").onclick=function(){go(i<D.length-1?i+1:-1)};
+document.getElementById("mark").onclick=function(){done[D[i].id]=!done[D[i].id];save();render(true)};
+var seg=document.getElementById("seg"),cmp=document.getElementById("cmp");
+seg.querySelectorAll("button").forEach(function(b){b.onclick=function(){
+view=b.dataset.s;cmp.dataset.v=view;
+seg.querySelectorAll("button").forEach(function(x){x.classList.toggle("on",x===b)})}});
+/* imagens: adicionar, remover, ampliar, arrastar */
+v.querySelectorAll('input[type=file]').forEach(function(inp){inp.onchange=function(){addFiles(inp.dataset.k,inp.files)}});
+v.querySelectorAll(".rm").forEach(function(b){b.onclick=function(){var k=b.dataset.k;IMG[k].splice(+b.dataset.n,1);idbSave(k);render(true)}});
+v.querySelectorAll(".th img").forEach(function(im){im.onclick=function(){zoom(im.src,im.alt)}});
+v.querySelectorAll(".box").forEach(function(bx){
+bx.ondragover=function(e){e.preventDefault();bx.classList.add("drag")};
+bx.ondragleave=function(){bx.classList.remove("drag")};
+bx.ondrop=function(e){e.preventDefault();bx.classList.remove("drag");if(e.dataTransfer&&e.dataTransfer.files)addFiles(bx.dataset.k,e.dataTransfer.files)}})}
+if(keep)window.scrollTo(0,y);else window.scrollTo(0,0);
+}
+
+/* ---------- visualizador de imagem ---------- */
+var lb=document.getElementById("lb");
+function zoom(src,alt){var i=document.getElementById("lbi");i.src=src;i.alt=alt||"";lb.classList.add("on")}
+function unzoom(){lb.classList.remove("on")}
+lb.onclick=function(e){if(e.target!==document.getElementById("lbi"))unzoom()};
+document.getElementById("lbx").onclick=unzoom;
+
+document.getElementById("theme").onclick=function(){
+var r=document.documentElement,dark=r.getAttribute("data-theme")==="dark"||(r.getAttribute("data-theme")!=="light"&&matchMedia("(prefers-color-scheme: dark)").matches);
+r.setAttribute("data-theme",dark?"light":"dark")};
+window.addEventListener("hashchange",function(){render(false)});
+document.addEventListener("keydown",function(e){
+if(e.key==="Escape"){unzoom();return}
+if(lb.classList.contains("on"))return;
+var t=e.target&&e.target.tagName;if(t==="INPUT"||t==="TEXTAREA")return;
+var i=idx();if(e.key==="ArrowRight")go(i<D.length-1?i+1:-1);if(e.key==="ArrowLeft"&&i>=0)go(i-1)});
+
+
+/* ---------- exportação para Excel (.xlsx gerado no próprio navegador, sem internet) ---------- */
+function esc(s){return String(s).replace(/&/g,"&amp;").replace(/</g,"&lt;").replace(/>/g,"&gt;").replace(/"/g,"&quot;")}
+function colL(n){return String.fromCharCode(65+n)}
+function cS(r,c,v,s){return '<c r="'+colL(c)+r+'" s="'+s+'" t="inlineStr"><is><t xml:space="preserve">'+esc(v)+'</t></is></c>'}
+function cN(r,c,v,s){return '<c r="'+colL(c)+r+'" s="'+s+'"><v>'+v+'</v></c>'}
+function cF(r,c,f,v,s){return '<c r="'+colL(c)+r+'" s="'+s+'"><f>'+esc(f)+'</f><v>'+v+'</v></c>'}
+var CT=(function(){var t=[],c,n,k;for(n=0;n<256;n++){c=n;for(k=0;k<8;k++)c=c&1?0xEDB88320^(c>>>1):c>>>1;t[n]=c>>>0}return t})();
+function crc32(b){var c=0xFFFFFFFF;for(var i=0;i<b.length;i++)c=CT[(c^b[i])&255]^(c>>>8);return(c^0xFFFFFFFF)>>>0}
+function zipFiles(files){
+var enc=new TextEncoder(),parts=[],cen=[],off=0,now=new Date(),
+tm=(now.getHours()<<11)|(now.getMinutes()<<5)|(now.getSeconds()>>1),
+dt=((now.getFullYear()-1980)<<9)|((now.getMonth()+1)<<5)|now.getDate();
+files.forEach(function(f){
+var nm=enc.encode(f.n),d=enc.encode(f.d),c=crc32(d),h=new DataView(new ArrayBuffer(30));
+h.setUint32(0,0x04034b50,true);h.setUint16(4,20,true);h.setUint16(6,0x0800,true);h.setUint16(10,tm,true);h.setUint16(12,dt,true);
+h.setUint32(14,c,true);h.setUint32(18,d.length,true);h.setUint32(22,d.length,true);h.setUint16(26,nm.length,true);
+parts.push(new Uint8Array(h.buffer),nm,d);
+var g=new DataView(new ArrayBuffer(46));
+g.setUint32(0,0x02014b50,true);g.setUint16(4,20,true);g.setUint16(6,20,true);g.setUint16(8,0x0800,true);g.setUint16(12,tm,true);g.setUint16(14,dt,true);
+g.setUint32(16,c,true);g.setUint32(20,d.length,true);g.setUint32(24,d.length,true);g.setUint16(28,nm.length,true);g.setUint32(42,off,true);
+cen.push(new Uint8Array(g.buffer),nm);
+off+=30+nm.length+d.length});
+var cs=0;cen.forEach(function(x){cs+=x.length});
+var e=new DataView(new ArrayBuffer(22));
+e.setUint32(0,0x06054b50,true);e.setUint16(8,files.length,true);e.setUint16(10,files.length,true);e.setUint32(12,cs,true);e.setUint32(16,off,true);
+return new Blob(parts.concat(cen,[new Uint8Array(e.buffer)]),{type:"application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"})}
+
+function buildXlsx(){
+var X='<?xml version="1.0" encoding="UTF-8" standalone="yes"?>\n',NS='xmlns="http://schemas.openxmlformats.org/spreadsheetml/2006/main"',
+H=["Nº","Ponto de atenção","Área","Dificuldade informada","Melhoria proposta","Status da análise","Imagens (dificuldade)","Imagens (melhoria)","Responsável","Prazo","Prioridade","Observações"],
+n=D.length,last=n+1,r,i,rows='<row r="1" ht="32" customHeight="1">';
+H.forEach(function(t,c){rows+=cS(1,c,t,1)});rows+='</row>';
+D.forEach(function(d,k){r=k+2;
+rows+='<row r="'+r+'">'+cN(r,0,k+1,3)+cS(r,1,d.t.replace(" · "," – "),2)+cS(r,2,d.area,2)+cS(r,3,d.w,2)+cS(r,4,d.o,2)+
+cS(r,5,done[d.id]?"Analisado":"Pendente",3)+cN(r,6,(IMG[d.id+":w"]||[]).length,3)+cN(r,7,(IMG[d.id+":o"]||[]).length,3)+
+cS(r,8,"",2)+cS(r,9,"",2)+cS(r,10,"",3)+cS(r,11,"",2)+'</row>'});
+var w=[6,34,18,55,55,16,14,14,20,14,13,30],cols='<cols>';
+w.forEach(function(x,k){cols+='<col min="'+(k+1)+'" max="'+(k+1)+'" width="'+x+'" customWidth="1"/>'});cols+='</cols>';
+var sh1=X+'<worksheet '+NS+'><sheetViews><sheetView workbookViewId="0" showGridLines="0"><pane ySplit="1" topLeftCell="A2" activePane="bottomLeft" state="frozen"/></sheetView></sheetViews><sheetFormatPr defaultRowHeight="15"/>'+cols+
+'<sheetData>'+rows+'</sheetData><autoFilter ref="A1:L'+last+'"/><dataValidations count="1"><dataValidation type="list" allowBlank="1" showErrorMessage="1" sqref="K2:K'+last+'"><formula1>"Alta,Média,Baixa"</formula1></dataValidation></dataValidations>'+
+'<pageMargins left="0.5" right="0.5" top="0.6" bottom="0.6" header="0.3" footer="0.3"/><pageSetup orientation="landscape" fitToHeight="0"/></worksheet>';
+/* resumo por área, com fórmulas ligadas à aba Pontos */
+var areas=[];D.forEach(function(d){if(areas.indexOf(d.area)<0)areas.push(d.area)});
+var rr='<row r="1" ht="28" customHeight="1">';["Área","Pontos","Analisados","Pendentes","% analisado"].forEach(function(t,c){rr+=cS(1,c,t,1)});rr+='</row>';
+var tp=0,ta=0;
+areas.forEach(function(a,k){r=k+2;
+var p=D.filter(function(d){return d.area===a}).length,an=D.filter(function(d){return d.area===a&&done[d.id]}).length;tp+=p;ta+=an;
+rr+='<row r="'+r+'">'+cS(r,0,a,2)+cF(r,1,'COUNTIF(Pontos!$C$2:$C$'+last+',A'+r+')',p,3)+
+cF(r,2,'COUNTIFS(Pontos!$C$2:$C$'+last+',A'+r+',Pontos!$F$2:$F$'+last+',"Analisado")',an,3)+
+cF(r,3,'B'+r+'-C'+r,p-an,3)+cF(r,4,'IF(B'+r+'=0,0,C'+r+'/B'+r+')',p?an/p:0,4)+'</row>'});
+var tr=areas.length+2,e=areas.length+1;
+rr+='<row r="'+tr+'">'+cS(tr,0,"Total",5)+cF(tr,1,'SUM(B2:B'+e+')',tp,5)+cF(tr,2,'SUM(C2:C'+e+')',ta,5)+cF(tr,3,'SUM(D2:D'+e+')',tp-ta,5)+cF(tr,4,'IF(B'+tr+'=0,0,C'+tr+'/B'+tr+')',tp?ta/tp:0,6)+'</row>';
+var nw=new Date(),pad=function(v){return(v<10?"0":"")+v},ds=pad(nw.getDate())+"/"+pad(nw.getMonth()+1)+"/"+nw.getFullYear();
+rr+='<row r="'+(tr+2)+'">'+cS(tr+2,0,"Gerado em "+ds+" · DAG | Painel de Melhorias",7)+'</row>';
+var sh2=X+'<worksheet '+NS+'><sheetViews><sheetView workbookViewId="0" showGridLines="0"/></sheetViews><sheetFormatPr defaultRowHeight="15"/><cols><col min="1" max="1" width="26" customWidth="1"/><col min="2" max="5" width="15" customWidth="1"/></cols><sheetData>'+rr+'</sheetData></worksheet>';
+var st=X+'<styleSheet '+NS+'><fonts count="4"><font><sz val="11"/><name val="Calibri"/></font><font><b/><sz val="11"/><color rgb="FFFFFFFF"/><name val="Calibri"/></font><font><b/><sz val="11"/><name val="Calibri"/></font><font><i/><sz val="10"/><color rgb="FF5B6678"/><name val="Calibri"/></font></fonts>'+
+'<fills count="4"><fill><patternFill patternType="none"/></fill><fill><patternFill patternType="gray125"/></fill><fill><patternFill patternType="solid"><fgColor rgb="FF2F5BEA"/><bgColor indexed="64"/></patternFill></fill><fill><patternFill patternType="solid"><fgColor rgb="FFE8EEFF"/><bgColor indexed="64"/></patternFill></fill></fills>'+
+'<borders count="2"><border><left/><right/><top/><bottom/><diagonal/></border><border><left style="thin"><color rgb="FFDFE4EC"/></left><right style="thin"><color rgb="FFDFE4EC"/></right><top style="thin"><color rgb="FFDFE4EC"/></top><bottom style="thin"><color rgb="FFDFE4EC"/></bottom><diagonal/></border></borders>'+
+'<cellStyleXfs count="1"><xf numFmtId="0" fontId="0" fillId="0" borderId="0"/></cellStyleXfs><cellXfs count="8">'+
+'<xf numFmtId="0" fontId="0" fillId="0" borderId="0" xfId="0"/>'+
+'<xf numFmtId="0" fontId="1" fillId="2" borderId="1" xfId="0" applyFont="1" applyFill="1" applyBorder="1" applyAlignment="1"><alignment horizontal="center" vertical="center" wrapText="1"/></xf>'+
+'<xf numFmtId="0" fontId="0" fillId="0" borderId="1" xfId="0" applyBorder="1" applyAlignment="1"><alignment vertical="top" wrapText="1"/></xf>'+
+'<xf numFmtId="0" fontId="0" fillId="0" borderId="1" xfId="0" applyBorder="1" applyAlignment="1"><alignment horizontal="center" vertical="top" wrapText="1"/></xf>'+
+'<xf numFmtId="9" fontId="0" fillId="0" borderId="1" xfId="0" applyNumberFormat="1" applyBorder="1" applyAlignment="1"><alignment horizontal="center" vertical="top"/></xf>'+
+'<xf numFmtId="0" fontId="2" fillId="3" borderId="1" xfId="0" applyFont="1" applyFill="1" applyBorder="1" applyAlignment="1"><alignment horizontal="center" vertical="top"/></xf>'+
+'<xf numFmtId="9" fontId="2" fillId="3" borderId="1" xfId="0" applyNumberFormat="1" applyFont="1" applyFill="1" applyBorder="1" applyAlignment="1"><alignment horizontal="center" vertical="top"/></xf>'+
+'<xf numFmtId="0" fontId="3" fillId="0" borderId="0" xfId="0" applyFont="1"/></cellXfs><cellStyles count="1"><cellStyle name="Normal" xfId="0" builtinId="0"/></cellStyles></styleSheet>';
+var wb=X+'<workbook '+NS+' xmlns:r="http://schemas.openxmlformats.org/officeDocument/2006/relationships"><bookViews><workbookView/></bookViews><sheets><sheet name="Pontos" sheetId="1" r:id="rId1"/><sheet name="Resumo por área" sheetId="2" r:id="rId2"/></sheets><calcPr fullCalcOnLoad="1"/></workbook>';
+var RT='http://schemas.openxmlformats.org/officeDocument/2006/relationships';
+return zipFiles([
+{n:"[Content_Types].xml",d:X+'<Types xmlns="http://schemas.openxmlformats.org/package/2006/content-types"><Default Extension="rels" ContentType="application/vnd.openxmlformats-package.relationships+xml"/><Default Extension="xml" ContentType="application/xml"/><Override PartName="/xl/workbook.xml" ContentType="application/vnd.openxmlformats-officedocument.spreadsheetml.sheet.main+xml"/><Override PartName="/xl/worksheets/sheet1.xml" ContentType="application/vnd.openxmlformats-officedocument.spreadsheetml.worksheet+xml"/><Override PartName="/xl/worksheets/sheet2.xml" ContentType="application/vnd.openxmlformats-officedocument.spreadsheetml.worksheet+xml"/><Override PartName="/xl/styles.xml" ContentType="application/vnd.openxmlformats-officedocument.spreadsheetml.styles+xml"/></Types>'},
+{n:"_rels/.rels",d:X+'<Relationships xmlns="http://schemas.openxmlformats.org/package/2006/relationships"><Relationship Id="rId1" Type="'+RT+'/officeDocument" Target="xl/workbook.xml"/></Relationships>'},
+{n:"xl/workbook.xml",d:wb},
+{n:"xl/_rels/workbook.xml.rels",d:X+'<Relationships xmlns="http://schemas.openxmlformats.org/package/2006/relationships"><Relationship Id="rId1" Type="'+RT+'/worksheet" Target="worksheets/sheet1.xml"/><Relationship Id="rId2" Type="'+RT+'/worksheet" Target="worksheets/sheet2.xml"/><Relationship Id="rId3" Type="'+RT+'/styles" Target="styles.xml"/></Relationships>'},
+{n:"xl/styles.xml",d:st},
+{n:"xl/worksheets/sheet1.xml",d:sh1},
+{n:"xl/worksheets/sheet2.xml",d:sh2}])}
+
+function exportXlsx(){
+try{
+var b=buildXlsx(),a=document.createElement("a"),t=new Date(),pad=function(v){return(v<10?"0":"")+v};
+a.href=URL.createObjectURL(b);
+a.download="DAG_Painel_de_Melhorias_"+t.getFullYear()+"-"+pad(t.getMonth()+1)+"-"+pad(t.getDate())+".xlsx";
+document.body.appendChild(a);a.click();a.remove();
+setTimeout(function(){URL.revokeObjectURL(a.href)},4000)
+}catch(e){alert("Não foi possível gerar o arquivo Excel neste navegador.")}}
+document.addEventListener("click",function(e){if(e.target.closest&&e.target.closest(".xlbtn"))exportXlsx()});
+
+/* inicia: abre o banco de imagens, carrega e desenha a tela */
+idbOpen(function(){idbLoad(function(){render(false)})});
+</script>
+</body>
+</html>
