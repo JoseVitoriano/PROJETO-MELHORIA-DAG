@@ -74,6 +74,7 @@ h3.sec{margin:0 0 14px;font-size:18px}
 #lb.on{display:flex}
 #lb img{max-width:100%;max-height:100%;border-radius:12px;box-shadow:0 20px 60px rgba(0,0,0,.5)}
 #lb button{position:absolute;top:calc(16px + env(safe-area-inset-top,0px));right:16px;border:0;border-radius:10px;padding:10px 14px;font-size:15px;font-weight:700;cursor:pointer;background:#fff;color:#0f1b2d}
+#lb button:hover{background:var(--bg);color:#fff}
 .seg{display:none;gap:6px;margin:16px 0}
 .seg button{flex:1;cursor:pointer;border:1px solid var(--line);background:var(--panel);color:var(--text);padding:10px;border-radius:10px;font-size:15px}
 .seg button.on{background:var(--acc);color:#fff;border-color:var(--acc)}
@@ -125,12 +126,12 @@ var D=[
 {id:"armazenagem",ic:"🗄️",t:"Armazenagem e endereços",area:"Armazenagem",w:"Faltam endereços disponíveis por causa da forma como os produtos estão armazenados.",o:"Identificar os produtos e resumi-los em um único palete, liberando endereços para a operação."},
 {id:"coletores",ic:"📟",t:"Quantidade de coletores",area:"Separação",w:"A quantidade de coletores limita a distribuição das operações de separação.",o:"Elevar a quantidade de coletores para distribuir melhor a separação."},
 {id:"pcp",ic:"🗓️",t:"PCP define as rotinas",area:"PCP",w:"A expedição acaba definindo as rotinas de operação, papel que não é dela.",o:"O PCP define as rotinas: separação e emissão de etiquetas e relatórios de todas as lojas, na data específica."},
-{id:"boxes",ic:"🚛",t:"Boxes de carregamento e descarregamento · lojas e cliente final",area:"Expedição",w:"Os boxes de carregamento e descarregamento não têm uso definido. A entrega ao cliente final, o abastecimento de lojas e o recebimento de mercadorias disputam o mesmo espaço, o que gera fila de veículos, mistura de cargas e demora na saída.",o:"Definir e sinalizar os boxes por finalidade: carregamento para abastecimento de lojas, carregamento para entrega ao cliente final e descarregamento. Estabelecer regras de uso e responsável para dar fluidez e controle ao fluxo."},
+{id:"boxes",ic:"🚛",t:"Definição e organização dos boxes de carregamento e descarregamento · abastecimento e cliente final",area:"Expedição",w:"Os boxes de carregamento e descarregamento não têm uso definido. A entrega ao cliente final, o abastecimento de lojas e o recebimento de mercadorias disputam o mesmo espaço, o que gera fila de veículos, mistura de cargas e demora na saída.",o:"Definir e sinalizar os boxes por finalidade: carregamento para abastecimento de lojas, carregamento para entrega ao cliente final e descarregamento. Estabelecer regras de uso e responsável para dar fluidez e controle ao fluxo."},
 {id:"almoxarifado",ic:"🏭",t:"Estruturação do almoxarifado",area:"Almoxarifado",w:"A área de operação do almoxarifado não tem delimitação física, o que facilita a circulação de pessoas não autorizadas e a perda de controle sobre os itens.",o:"Estruturar o almoxarifado com estruturas de organização e telas metálicas com uma porta, delimitando o espaço da área de operação."},
-{id:"gradeportapalete",ic:"🔒",t:"Grade metálica no porta-palete · eletrinhos",area:"Armazenagem",w:"Eletrinhos e produtos de caixa master aberta ficam sem proteção e sem controle de saída na estrutura porta-palete.",o:"Definir uma grade metálica adaptada na estrutura porta-palete (estrutura de armazenagem) para controlar os eletrinhos e os produtos com caixa master aberta."},
+{id:"gradeportapalete",ic:"🔒",t:"Personalizar grade metálica na estrutura porta-palete · eletrinhos",area:"Armazenagem",w:"Eletrinhos e produtos de caixa master aberta ficam sem proteção e sem controle de saída na estrutura porta-palete.",o:"Definir uma grade metálica adaptada na estrutura porta-palete (estrutura de armazenagem) para controlar os eletrinhos e os produtos com caixa master aberta."},
 {id:"blocada",ic:"🧱",t:"Organização da área blocada",area:"Armazenagem",w:"A área blocada precisa de melhor organização dos itens blocados, e a reposição de paletes não tem um fluxo definido.",o:"Melhorar a organização dos itens blocados e, quando houver necessidade, abrir chamados solicitando paletes."},
-{id:"bico",ic:"📍",t:"Programação de sexta-feira · Bico do Papagaio",area:"Programação",w:"Os novos pontos de abastecimento, conhecidos como Bico do Papagaio, ainda não constam na programação de sexta-feira.",o:"Adicionar na programação de sexta-feira a região dos novos pontos de abastecimento, conhecidos como Bico do Papagaio."},
-{id:"taguatinga",ic:"🚚",t:"Nova região Taguatinga · rota PNA",area:"Programação",w:"A nova região de Taguatinga precisa de uma data de programação definida.",o:"Adicionar Taguatinga na mesma data de programação da região de PNA, pois é a mesma rota de abastecimento."}
+{id:"bico",ic:"📍",t:"Definir programação na sexta-feira | Região: Bico do Papagaio",area:"Programação",w:"Os novos pontos de abastecimento, conhecidos como Bico do Papagaio, ainda não constam na programação de sexta-feira.",o:"Adicionar na programação de sexta-feira a região dos novos pontos de abastecimento, conhecidos como Bico do Papagaio."},
+{id:"taguatinga",ic:"🚚",t:"Definir programação na quarta-feira | Nova região Taguatinga e Combinado · rota PNA",area:"Programação",w:"A nova região de Taguatinga precisa de uma data de programação definida.",o:"Adicionar Taguatinga na mesma data de programação da região de PNA, pois é a mesma rota de abastecimento."}
 ];
 
 /* ---------- estado: análise concluída (localStorage) ---------- */
@@ -193,7 +194,7 @@ document.getElementById("pb").style.width=(n/D.length*100)+"%";
 document.querySelectorAll("nav button").forEach(function(b){b.onclick=function(){go(+b.dataset.i)}});
 }
 function home(){
-var h='<h1>Melhorias na operação logística</h1><p class="sub">Dificuldades encontradas e possibilidades de melhoria, da loja à expedição.</p>';
+var h='<h1>Melhorias na operação logística</h1><p class="sub">Dificuldades encontradas e possibilidades de melhorias, no cd de DAG.</p>';
 h+='<div class="kpis"><div class="kpi a"><b>'+D.length+'</b><span>pontos em análise</span></div><div class="kpi w"><b>'+D.length+'</b><span>dificuldades mapeadas</span></div><div class="kpi o"><b>'+D.length+'</b><span>melhorias propostas</span></div><div class="kpi"><b>'+cnt()+'/'+D.length+'</b><span>pontos analisados</span></div></div>';
 h+='<h3 class="sec">Pontos de atenção</h3><div class="grid">';
 D.forEach(function(d,i){var m=nImg(d.id);h+='<button class="card '+(done[d.id]?"done":"")+'" data-i="'+i+'"><span class="ic">'+d.ic+'</span><h4>'+d.t+'</h4><span class="meta"><span class="tag">'+d.area+'</span>'+(m?'<span class="tag img">🖼 '+m+'</span>':'')+'</span></button>'});
